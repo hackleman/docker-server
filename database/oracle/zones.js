@@ -15,7 +15,7 @@ async function find(context) {
   }
 console.log(query);
   const result = await database.simpleExecute(query, binds);
-
+  console.log(result);
   return result.rows;
 }
 
