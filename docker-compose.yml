@@ -41,7 +41,7 @@ services:
     image: certbot/certbot
     container_name: certbot
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/lib/letsencrypt
+      - ./data/certbot/etc:/etc/letsencrypt
+      - ./data/certbot/var:/var/lib/letsencrypt
       - ./public:/var/www/html
     command: certonly --webroot --webroot-path=/var/www/html --email hackleman.jason@gmail.com --agree-tos --no-eff-email --staging -d taxidata.tk  -d www.taxidata.tk
