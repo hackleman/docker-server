@@ -6,15 +6,15 @@ services:
     container_name: docker-node-mongo
     restart: on-failure
     build: .
-    networks:
-     - app-network
+    links:
+      - mongo
+      - nginx
+      - certbot
   mongo:
     container_name: mongo
     image: mongo
     ports: 
       - '27017:27017'
-    networks:
-      - app-network
   nginx:
     container_name: webserver
     image: nginx:mainline-alpine
@@ -28,9 +28,6 @@ services:
       - ./data/certbot/var:/var/lib/letsencrypt
     depends_on:
       - app
-    networks:
-      - app-network
-  
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -41,7 +38,3 @@ services:
     depends_on:
       - nginx
     command: certonly --webroot --webroot-path=/var/www/html --email hackleman.jason@gmail.com --agree-tos --no-eff-email --staging -d taxidata.tk  -d www.taxidata.tk
-
-networks:
-  app-network:
-    driver: bridge
