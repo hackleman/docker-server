@@ -10,11 +10,22 @@ services:
       - mongo
       - nginx
       - certbot
+      - oracle-xe
   mongo:
     container_name: mongo
     image: mongo
     ports: 
       - '27017:27017'
+  oracle-xe:
+    container_name: oracle-xe
+    image: hackleman/oracleproject
+    ports:
+      - '32118:1521'
+      - '35518:5500'
+    volumes:
+      - ./data/oracle:/opt/oracle/oradata
+    environment:
+      - ORACLE_PWD=Oracle18   
   nginx:
     container_name: webserver
     image: nginx:mainline-alpine
