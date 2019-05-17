@@ -1,28 +1,50 @@
 version: '3'
 
 services: 
+  
   app: 
     container_name: docker-node-mongo
     restart: on-failure
     build: .
     ports: 
-     - '80:4000'
+     - '4000:4000'
      - '8001:8001'
-    links:
-     - mongo
-     - oracle-xe
+    networks:
+     - app-network
   mongo:
     container_name: mongo
     image: mongo
     ports: 
-     - '27017:27017'
-  oracle-xe:
-    container_name: oracle-xe
-    image: hackleman/oracleproject
-    ports:
-      - '32118:1521'
-      - '35518:5500'
+      - '27017:27017'
+    networks:
+      - app-network
+  nginx:
+    container_name: webserver
+    image: nginx:mainline-alpine
+    restart: unless-stopped
+    ports: 
+     - '80:80'
     volumes:
-      - ./data:/opt/oracle/oradata
-    environment:
-      - ORACLE_PWD=Oracle18
+      - ./public:/var/www/html
+      - ./data/nginx:/etc/nginx/conf.d
+      - ./data/certbot/etc:/etc/letsencrypt
+      - ./data/certbot/var:/var/lib/letsencrypt
+    depends_on:
+      - app
+    networks:
+      - app-network
+  
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/lib/letsencrypt
+      - ./public:/var/www/html
+    depends_on:
+      - nginx
+    command: certonly --webroot --webroot-path=/var/www/html --email hackleman.jason@gmail.com --agree-tos --no-eff-email --staging -d taxidata.tk  -d www.taxidata.tk
+
+networks:
+  app-network:
+    driver: bridge
