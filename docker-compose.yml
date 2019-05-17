@@ -26,8 +26,6 @@ services:
       - ./data/nginx:/etc/nginx/conf.d
       - ./data/certbot/etc:/etc/letsencrypt
       - ./data/certbot/var:/var/lib/letsencrypt
-    depends_on:
-      - app
   certbot:
     image: certbot/certbot
     container_name: certbot
@@ -35,6 +33,4 @@ services:
       - ./data/certbot/conf:/etc/letsencrypt
       - ./data/certbot/www:/var/lib/letsencrypt
       - ./public:/var/www/html
-    depends_on:
-      - nginx
     command: certonly --webroot --webroot-path=/var/www/html --email hackleman.jason@gmail.com --agree-tos --no-eff-email --staging -d taxidata.tk  -d www.taxidata.tk
